@@ -80,7 +80,7 @@ export class Node extends React.Component {
                 <body xmlns="http://www.w3.org/1999/xhtml">
                     <div ref="foreignContainer">
                         <h3 style={{color: '#fff'}}>{this.node.metadata.label}</h3>
-                        <form>
+                        <form onMouseDown={e=>e.stopPropagation()}>
                             <label>Text: <input type="text" placeholder="Test"/></label>
                             <label>Number: <input type="number" placeholder="42"/></label>
                         </form>
