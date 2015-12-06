@@ -1,5 +1,5 @@
 import React from 'react';
-import {Edge} from './edge';
+import Edge from './edge';
 
 export class Port extends React.Component {
     constructor(props) {
@@ -17,32 +17,25 @@ export class Port extends React.Component {
 
         return <g>
             <circle r="7" cx={this.props.x} cy={yPos}></circle>
-            {connections.map(
-                c => <Edge
+            {connections.map(c => {
+                    let {process, port} = c.tgt;
+                    process = this.props.processes[process];
+                    let component = this.props.components[process.component];
+                    let portIdx = component.inPorts.indexOf(port);
+
+                    if(portIdx < 0) throw new Error(`Port $(c.tgt.port) does not exist`);
+
+                    let endY = process.metadata.y + 10 + portIdx * 20;
+
+                    return <Edge
                         key={`${c.tgt.process}_${c.tgt.port}`}
-                        target={c.tgt}
                         startX={this.props.x} startY={yPos}
-                        {...this.props}
-                    />
-            )}
+                        endX={process.metadata.x} endY={endY}
+                    />;
+            })}
         </g>;
     }
 }
-
-/*
-
-React.DOM.circle({
-            className: "port-circle",
-            cx: this.props.x,
-            cy: this.props.y,
-            r: 4
-          }),
-          React.DOM.text({
-            className: "port-label port-label-"+this.props.label.length,
-            x: this.props.x,
-            y: this.props.y,
-            children: this.props.label
-        })*/
 
 Port.propTypes = {
     name: React.PropTypes.string.isRequired,
