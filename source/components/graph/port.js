@@ -4,7 +4,52 @@ import Edge from './edge';
 export class Port extends React.Component {
     constructor(props) {
         super(props);
+
+        //FIXME replace with arrow functions, unite with node
+        this.onMouseMove = this.onMouseMove.bind(this);
+        this.onMouseUp = this.onMouseUp.bind(this);
+
+        this.state = {
+            dragging: false,
+            mouseX: 0,
+            mouseY: 0
+        };
     }
+
+    //move node on mouse movement
+    onMouseDown(e){
+        e.preventDefault();
+        e.stopPropagation();
+
+        //TODO adjust for viewport translation
+        this.setState({
+            dragging: true,
+            mouseX: e.pageX,
+            mouseY: e.pageY
+        });
+
+        //check for changes
+        window.addEventListener('mousemove', this.onMouseMove);
+        window.addEventListener('mouseup', this.onMouseUp);
+    }
+    onMouseMove(e){
+        //update element position
+        this.setState({
+            mouseX: e.pageX,
+            mouseY: e.pageY
+        });
+
+        //TODO check if close to any port, highlight port
+    }
+    onMouseUp(e){
+        e.stopPropagation();
+
+        this.setState({dragging: false});
+
+        window.removeEventListener('mousemove', this.onMouseMove);
+        window.removeEventListener('mouseup', this.onMouseUp);
+    }
+
     render(){
         let connections = [];
         if(this.props.type === 'out'){
@@ -15,7 +60,7 @@ export class Port extends React.Component {
 
         let yPos = this.props.y + 10 + this.props.index * 20;
 
-        return <g>
+        return <g onMouseDown={this.onMouseDown.bind(this)}>
             <circle r="7" cx={this.props.x} cy={yPos}></circle>
             {connections.map(c => {
                     let {process, port} = c.tgt;
@@ -33,6 +78,10 @@ export class Port extends React.Component {
                         endX={process.metadata.x} endY={endY}
                     />;
             })}
+            {this.state.dragging ?
+                <Edge key="drag" startX={this.props.x} startY={yPos} endX={this.state.mouseX} endY={this.state.mouseY}/> :
+                []
+            }
         </g>;
     }
 }
