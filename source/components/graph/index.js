@@ -1,6 +1,6 @@
 import React from 'react';
 import {Node} from './node';
-import dragHandler from '../../lib/dragHandler';
+import dragHandler from 'lib/dragHandler';
 
 /*
 const MIN_ZOOM = .1;

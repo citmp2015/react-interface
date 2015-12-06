@@ -1,6 +1,6 @@
 import React from 'react';
 import Edge from './edge';
-import dragHandler from '../../lib/dragHandler';
+import dragHandler from 'lib/dragHandler';
 
 export class Port extends React.Component {
     constructor(props) {
