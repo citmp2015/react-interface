@@ -1,6 +1,7 @@
 import React from 'react';
 import Edge from './edge';
 import dragHandler from 'lib/dragHandler';
+import getPortYPos from 'lib/getPortYPos';
 
 export class Port extends React.Component {
     constructor(props) {
@@ -16,13 +17,25 @@ export class Port extends React.Component {
                 this.setState({dragging: true, mouseX: 0, mouseY: 0});
             },
             //TODO check if close to any port, highlight port
-            // this.props.dispatch({type: 'ADD_CONNECTION', srcProcess, srcPort, tgtProcess, tgtPort});
             e => {
                 this.updateMousePos(e.pageX - this._dragMouseX, e.pageY - this._dragMouseY);
                 this._dragMouseX = e.pageX;
                 this._dragMouseY = e.pageY;
             },
-            () => this.setState({dragging: false})
+            () => {
+                this.setState({dragging: false})
+                let target = this.getClosestPort(this.state.mouseX, this.state.mouseY);
+
+                if(target === null) return;
+
+                this.props.dispatch({
+                    type: 'ADD_CONNECTION',
+                    srcProcess: this.props.process,
+                    srcPort: this.props.name,
+                    tgtProcess: target.process,
+                    tgtPort: target.port
+                });
+            }
         );
 
         this.state = {
@@ -37,14 +50,43 @@ export class Port extends React.Component {
         let mouseY = this.state.mouseY + Math.round(absoluteY * this.props.appState.scale);
 
         this.setState({mouseX, mouseY});
-        if(requestAnimationFrame){
-            requestAnimationFrame(() => this.searchConnection(mouseX, mouseY));
-        } //TODO else
+        //TODO support incoming ports
+        if(this.props.type === "out"){
+            window.requestAnimationFrame(() => this.searchConnection(mouseX, mouseY));
+        }
     }
 
     searchConnection(mouseX, mouseY){
-        //TODO
-        console.log('searching', mouseX, mouseY);
+        let port = this.getClosestPort(mouseX, mouseY);
+        //TODO highlight port
+    }
+
+    getClosestPort(mouseX, mouseY){
+        let processes = this.props.processes;
+        //first, filter procs by their x value
+        let closeProcs = Object.keys(processes).filter(p => Math.abs(processes[p].metadata.x - mouseX) < 50);
+
+        if(closeProcs.length === 0) return null;
+
+        let inPorts = closeProcs.map(p => this.props.components[processes[p].component].inPorts);
+        let portPos = inPorts.map((p, i) => p.map((p, idx) => getPortYPos(idx) + processes[closeProcs[i]].metadata.y));
+
+        let minDistance = 1e3;
+        let minProc = 0;
+        let minPort = 0;
+
+        portPos.forEach((n, procIdx) => n.forEach((yPos, portIdx) => {
+            //no sqrt (is monotonic anyway)
+            let distance = Math.pow(processes[closeProcs[procIdx]].metadata.x - mouseX, 2) + Math.pow(yPos -  mouseY, 2);
+
+            if(distance < minDistance){
+                minDistance = distance;
+                minProc = procIdx;
+                minPort = portIdx;
+            }
+        }));
+
+        return {process: closeProcs[minProc], port: inPorts[minProc][minPort]};
     }
 
     render(){
@@ -60,7 +102,7 @@ export class Port extends React.Component {
 
                     if(portIdx < 0) throw new Error(`Port $(c.tgt.port) does not exist`);
 
-                    let endY = process.metadata.y + 10 + portIdx * 20;
+                    let endY = process.metadata.y + getPortYPos(portIdx);
 
                     return <Edge
                         key={`${c.tgt.process}_${c.tgt.port}`}
