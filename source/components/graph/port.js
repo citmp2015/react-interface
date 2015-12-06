@@ -16,14 +16,17 @@ export class Port extends React.Component {
                 this._dragMouseY = e.pageY;
                 this.setState({dragging: true, mouseX: 0, mouseY: 0});
             },
-            //TODO check if close to any port, highlight port
             e => {
                 this.updateMousePos(e.pageX - this._dragMouseX, e.pageY - this._dragMouseY);
                 this._dragMouseX = e.pageX;
                 this._dragMouseY = e.pageY;
             },
             () => {
-                this.setState({dragging: false})
+                this.setState({dragging: false});
+
+                //TODO support incoming ports
+                if(this.props.type === "in") return;
+
                 let target = this.getClosestPort(this.state.mouseX, this.state.mouseY);
 
                 if(target === null) return;
@@ -64,20 +67,23 @@ export class Port extends React.Component {
     getClosestPort(mouseX, mouseY){
         let processes = this.props.processes;
         //first, filter procs by their x value
-        let closeProcs = Object.keys(processes).filter(p => Math.abs(processes[p].metadata.x - mouseX) < 50);
+        let closeProcs = Object.keys(processes).filter(p => Math.abs(processes[p].metadata.x - mouseX - this.props.x) < 50);
 
         if(closeProcs.length === 0) return null;
 
         let inPorts = closeProcs.map(p => this.props.components[processes[p].component].inPorts);
-        let portPos = inPorts.map((p, i) => p.map((p, idx) => getPortYPos(idx) + processes[closeProcs[i]].metadata.y));
 
         let minDistance = 1e3;
         let minProc = 0;
         let minPort = 0;
 
-        portPos.forEach((n, procIdx) => n.forEach((yPos, portIdx) => {
+        inPorts.forEach((n, procIdx) => n.forEach((yPos, portIdx) => {
             //no sqrt (is monotonic anyway)
-            let distance = Math.pow(processes[closeProcs[procIdx]].metadata.x - mouseX, 2) + Math.pow(yPos -  mouseY, 2);
+            let distance = Math.pow(
+                processes[closeProcs[procIdx]].metadata.x - this.props.x - mouseX, 2
+            ) + Math.pow(
+                getPortYPos(portIdx) + processes[closeProcs[procIdx]].metadata.y - this.props.y - mouseY, 2
+            );
 
             if(distance < minDistance){
                 minDistance = distance;

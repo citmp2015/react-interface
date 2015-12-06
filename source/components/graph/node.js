@@ -86,7 +86,9 @@ export class Node extends React.Component {
                         components={this.props.components}
                         connections={[]}
                         appState={this.props.appState}
-                        store={this.props.store}
+
+                        //store
+                        dispatch={this.props.dispatch}
                     />
                 )}
             </g>
