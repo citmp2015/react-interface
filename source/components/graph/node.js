@@ -1,5 +1,6 @@
 import React from 'react';
 import {Port} from './port';
+import dragHandler from '../../lib/dragHandler';
 
 export class Node extends React.Component {
     constructor(props) {
@@ -11,9 +12,27 @@ export class Node extends React.Component {
 
         this.minHeight = minHeight;
 
-        //FIXME replace with arrow functions
-        this.onMouseMove = this.onMouseMove.bind(this);
-        this.onMouseUp = this.onMouseUp.bind(this);
+        this._dragMouseX = 0;
+        this._dragMouseY = 0;
+
+        this.onMouseDown = dragHandler(
+            e => {
+                this._dragMouseX = e.pageX;
+                this._dragMouseY = e.pageY;
+            },
+            e => {
+                //update element position
+                //TODO update global state
+                this.setState({
+                    x: this.state.x + e.pageX - this._dragMouseX,
+                    y: this.state.y + e.pageY - this._dragMouseY
+                });
+
+                //save coordinates
+                this._dragMouseX = e.pageX;
+                this._dragMouseY = e.pageY;
+            }
+        );
 
         this.state = {
             width: 20,
@@ -30,38 +49,6 @@ export class Node extends React.Component {
             width: this.refs.foreignContainer.scrollWidth + 20,
             height: Math.max(this.refs.foreignContainer.scrollHeight + 20, this.minHeight)
         });
-    }
-
-    //move node on mouse movement
-    onMouseDown(e){
-        e.preventDefault();
-        e.stopPropagation();
-
-        //save coordinates
-        this._dragMouseX = e.pageX;
-        this._dragMouseY = e.pageY;
-
-        //check for changes
-        window.addEventListener('mousemove', this.onMouseMove);
-        window.addEventListener('mouseup', this.onMouseUp);
-    }
-    onMouseMove(e){
-        //update element position
-        //TODO update global state
-        this.setState({
-            x: this.state.x + e.pageX - this._dragMouseX,
-            y: this.state.y + e.pageY - this._dragMouseY
-        });
-
-        //save coordinates
-        this._dragMouseX = e.pageX;
-        this._dragMouseY = e.pageY;
-    }
-    onMouseUp(e){
-        e.stopPropagation();
-
-        window.removeEventListener('mousemove', this.onMouseMove);
-        window.removeEventListener('mouseup', this.onMouseUp);
     }
 
     render(){

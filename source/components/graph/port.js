@@ -1,53 +1,30 @@
 import React from 'react';
 import Edge from './edge';
+import dragHandler from '../../lib/dragHandler';
 
 export class Port extends React.Component {
     constructor(props) {
         super(props);
 
-        //FIXME replace with arrow functions, unite with node
-        this.onMouseMove = this.onMouseMove.bind(this);
-        this.onMouseUp = this.onMouseUp.bind(this);
+        this.onMouseDown = dragHandler(
+            e => this.setState({
+                dragging: true,
+                mouseX: e.pageX,
+                mouseY: e.pageY
+            }),
+            //TODO check if close to any port, highlight port
+            e => this.setState({
+                mouseX: e.pageX,
+                mouseY: e.pageY
+            }),
+            () => this.setState({dragging: false})
+        );
 
         this.state = {
             dragging: false,
             mouseX: 0,
             mouseY: 0
         };
-    }
-
-    //move node on mouse movement
-    onMouseDown(e){
-        e.preventDefault();
-        e.stopPropagation();
-
-        //TODO adjust for viewport translation
-        this.setState({
-            dragging: true,
-            mouseX: e.pageX,
-            mouseY: e.pageY
-        });
-
-        //check for changes
-        window.addEventListener('mousemove', this.onMouseMove);
-        window.addEventListener('mouseup', this.onMouseUp);
-    }
-    onMouseMove(e){
-        //update element position
-        this.setState({
-            mouseX: e.pageX,
-            mouseY: e.pageY
-        });
-
-        //TODO check if close to any port, highlight port
-    }
-    onMouseUp(e){
-        e.stopPropagation();
-
-        this.setState({dragging: false});
-
-        window.removeEventListener('mousemove', this.onMouseMove);
-        window.removeEventListener('mouseup', this.onMouseUp);
     }
 
     render(){

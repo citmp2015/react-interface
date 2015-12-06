@@ -1,5 +1,6 @@
 import React from 'react';
 import {Node} from './node';
+import dragHandler from '../../lib/dragHandler';
 
 /*
 const MIN_ZOOM = .1;
@@ -9,45 +10,29 @@ const MAX_ZOOM = 15;
 export class Graph extends React.Component {
     constructor(props){
         super(props);
+
         this.state = {height: 0, width: 0, scale: 1, offsetX: 0, offsetY: 0};
 
+        // move viewport
         this._dragMouseX = 0;
         this._dragMouseY = 0;
 
-        //FIXME replace with arrow functions, unite with node
-        this.onMouseMove = this.onMouseMove.bind(this);
-        this.onMouseUp = this.onMouseUp.bind(this);
-    }
+        this.onMouseDown = dragHandler(
+            e => {
+                this._dragMouseX = e.pageX;
+                this._dragMouseY = e.pageY;
+            },
+            e => {
+                this.setState({
+                    offsetX: this.state.offsetX + Math.round((e.pageX - this._dragMouseX) / this.state.scale),
+                    offsetY: this.state.offsetY + Math.round((e.pageY - this._dragMouseY) / this.state.scale)
+                });
 
-    // move viewport
-    onMouseDown(e){
-        e.preventDefault();
-        e.stopPropagation();
-
-        //save coordinates
-        this._dragMouseX = e.pageX;
-        this._dragMouseY = e.pageY;
-
-        //check for changes
-        window.addEventListener('mousemove', this.onMouseMove);
-        window.addEventListener('mouseup', this.onMouseUp);
-    }
-    onMouseMove(e){
-        //update element position
-        this.setState({
-            offsetX: this.state.offsetX + Math.round((e.pageX - this._dragMouseX) / this.state.scale),
-            offsetY: this.state.offsetY + Math.round((e.pageY - this._dragMouseY) / this.state.scale)
-        });
-
-        //save coordinates
-        this._dragMouseX = e.pageX;
-        this._dragMouseY = e.pageY;
-    }
-    onMouseUp(e){
-        e.stopPropagation();
-
-        window.removeEventListener('mousemove', this.onMouseMove);
-        window.removeEventListener('mouseup', this.onMouseUp);
+                //save coordinates
+                this._dragMouseX = e.pageX;
+                this._dragMouseY = e.pageY;
+            }
+        );
     }
 
     //TODO scale stuff onWheel
