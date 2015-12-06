@@ -1,8 +1,10 @@
 import React from 'react';
 import {Node} from './node';
 
+/*
 const MIN_ZOOM = .1;
 const MAX_ZOOM = 15;
+*/
 
 export class Graph extends React.Component {
     constructor(props){
@@ -27,8 +29,8 @@ export class Graph extends React.Component {
         this._dragMouseY = e.pageY;
 
         //check for changes
-        window.addEventListener("mousemove", this.onMouseMove);
-        window.addEventListener("mouseup", this.onMouseUp);
+        window.addEventListener('mousemove', this.onMouseMove);
+        window.addEventListener('mouseup', this.onMouseUp);
     }
     onMouseMove(e){
         //update element position
@@ -42,10 +44,10 @@ export class Graph extends React.Component {
         this._dragMouseY = e.pageY;
     }
     onMouseUp(e){
-        event.stopPropagation();
+        e.stopPropagation();
 
-        window.removeEventListener("mousemove", this.onMouseMove);
-        window.removeEventListener("mouseup", this.onMouseUp);
+        window.removeEventListener('mousemove', this.onMouseMove);
+        window.removeEventListener('mouseup', this.onMouseUp);
     }
 
     //TODO scale stuff onWheel
