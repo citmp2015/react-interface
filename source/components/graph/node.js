@@ -24,8 +24,8 @@ export class Node extends React.Component {
                 //update element position
                 //TODO update global state
                 this.setState({
-                    x: this.state.x + e.pageX - this._dragMouseX,
-                    y: this.state.y + e.pageY - this._dragMouseY
+                    x: Math.round((this.state.x + e.pageX - this._dragMouseX) / this.props.appState.scale),
+                    y: Math.round((this.state.y + e.pageY - this._dragMouseY) / this.props.appState.scale)
                 });
 
                 //save coordinates
@@ -61,9 +61,9 @@ export class Node extends React.Component {
                 stroke="hsl(0, 0%, 50%)" strokeWidth="2px"
                 rx="4" ry="4"
                 width={width} height={height}
-                x={this.state.x + this.props.offsetX} y={this.state.y + this.props.offsetY}
+                x={this.state.x} y={this.state.y}
             />
-            <foreignObject x={this.state.x + this.props.offsetX + 10} y={this.state.y + this.props.offsetY + 10} width={width - 20} height={height - 20}>
+            <foreignObject x={this.state.x + 10} y={this.state.y + 10} width={width - 20} height={height - 20}>
                 <body xmlns="http://www.w3.org/1999/xhtml">
                     <div ref="foreignContainer">
                         <h3 style={{color: '#fff'}}>{this.props.metadata.label}</h3>
@@ -85,8 +85,7 @@ export class Node extends React.Component {
                         processes={this.props.processes}
                         components={this.props.components}
                         connections={[]}
-                        offsetX={this.props.offsetX}
-                        offsetY={this.props.offsetY}
+                        appState={this.props.appState}
                     />
                 )}
             </g>
@@ -105,8 +104,8 @@ export class Node extends React.Component {
                         processes={this.props.processes}
                         components={this.props.components}
                         connections={connections}
-                        offsetX={this.props.offsetX} offsetY={this.props.offsetY}
-                    />
+                        appState={this.props.appState}
+                    />;
                 })}
             </g>
         </g>;

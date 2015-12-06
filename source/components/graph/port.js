@@ -6,17 +6,24 @@ export class Port extends React.Component {
     constructor(props) {
         super(props);
 
+        this._dragMouseX = 0;
+        this._dragMouseY = 0;
+
         this.onMouseDown = dragHandler(
-            e => this.setState({
-                dragging: true,
-                mouseX: e.pageX,
-                mouseY: e.pageY
-            }),
+            e => {
+                this._dragMouseX = e.pageX;
+                this._dragMouseY = e.pageY;
+                this.setState({dragging: true});
+            },
             //TODO check if close to any port, highlight port
-            e => this.setState({
-                mouseX: e.pageX,
-                mouseY: e.pageY
-            }),
+            e => {
+                this.setState({
+                    mouseX: Math.round((this.state.mouseX + e.pageX - this._dragMouseX) / this.props.appState.scale),
+                    mouseY: Math.round((this.state.mouseY + e.pageY - this._dragMouseY) / this.props.appState.scale)
+                });
+                this._dragMouseX = e.pageX;
+                this._dragMouseY = e.pageY;
+            },
             () => this.setState({dragging: false})
         );
 
@@ -30,10 +37,8 @@ export class Port extends React.Component {
     render(){
         let connections = this.props.connections;
 
-        let yPos = this.props.y + this.props.offsetY;
-
         return <g onMouseDown={this.onMouseDown}>
-            <circle r="7" cx={this.props.x + this.props.offsetX} cy={yPos}/>
+            <circle r="7" cx={this.props.x} cy={this.props.y}/>
             {connections.map(c => {
                     let {process, port} = c.tgt;
                     process = this.props.processes[process];
@@ -46,14 +51,22 @@ export class Port extends React.Component {
 
                     return <Edge
                         key={`${c.tgt.process}_${c.tgt.port}`}
-                        startX={this.props.x + this.props.offsetX}
-                        startY={yPos}
-                        endX={process.metadata.x + this.props.offsetX}
-                        endY={endY + this.props.offsetY}
+                        startX={this.props.x}
+                        startY={this.props.y}
+                        endX={process.metadata.x}
+                        endY={endY}
                     />;
             })}
             {this.state.dragging ?
-                <Edge key="drag" startX={this.props.x} startY={yPos} endX={this.state.mouseX} endY={this.state.mouseY}/> :
+                [
+                    <Edge
+                        key="drag"
+                        startX={this.props.x} startY={this.props.y}
+                        endX={this.props.x + this.state.mouseX}
+                        endY={this.props.y + this.state.mouseY}
+                    />,
+                    <circle key="dragc" r="7" cx={this.props.x + this.state.mouseX} cy={this.props.y + this.state.mouseY}/>
+                ] :
                 []
             }
         </g>;

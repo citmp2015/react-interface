@@ -2,10 +2,8 @@ import React from 'react';
 import {Node} from './node';
 import dragHandler from 'lib/dragHandler';
 
-/*
 const MIN_ZOOM = .1;
 const MAX_ZOOM = 15;
-*/
 
 export class Graph extends React.Component {
     constructor(props){
@@ -24,8 +22,8 @@ export class Graph extends React.Component {
             },
             e => {
                 this.setState({
-                    offsetX: this.state.offsetX + Math.round((e.pageX - this._dragMouseX) / this.state.scale),
-                    offsetY: this.state.offsetY + Math.round((e.pageY - this._dragMouseY) / this.state.scale)
+                    offsetX: Math.round((this.state.offsetX + e.pageX - this._dragMouseX) / this.state.scale),
+                    offsetY: Math.round((this.state.offsetY + e.pageY - this._dragMouseY) / this.state.scale)
                 });
 
                 //save coordinates
@@ -35,7 +33,24 @@ export class Graph extends React.Component {
         );
     }
 
-    //TODO scale stuff onWheel
+    //scale stuff onWheel
+    onWheel(e){
+        e.preventDefault();
+
+        let zoomFactor = e.deltaY / -500;
+        zoomFactor = Math.min(0.5, Math.max(-0.5, zoomFactor)); //limit speed
+        let scale = this.state.scale + (this.state.scale * zoomFactor);
+
+        //check limits
+        scale = Math.min(scale, MAX_ZOOM);
+        scale = Math.max(scale, MIN_ZOOM);
+
+        if(scale === this.state.scale) return;
+
+        //TODO respect current position of pointer (currently zooms at top left corner)
+
+        this.setState({scale});
+    }
 
     componentWillMount(){
         let setSize = () => {
@@ -56,8 +71,9 @@ export class Graph extends React.Component {
         var {processes} = this.props;
         return <svg
             height={this.state.height} width={this.state.width}
-            //onWheel={this.onWheel.bind(this)}
             onMouseDown={this.onMouseDown}
+            onWheel={this.onWheel.bind(this)}
+            viewBox={`${-this.state.offsetX} ${-this.state.offsetY} ${this.state.scale * this.state.width} ${this.state.scale * this.state.height}`}
         >
             <g>{
                 Object.keys(processes).map(n => {
@@ -67,7 +83,7 @@ export class Graph extends React.Component {
                         key={n} process={n}
                         //scale={this.state.scale}
                         component={this.props.components[process.component]}
-                        offsetX={this.state.offsetX} offsetY={this.state.offsetY}
+                        appState={this.state}
                         metadata={process.metadata}
                         processes={processes}
                         components={this.props.components}
