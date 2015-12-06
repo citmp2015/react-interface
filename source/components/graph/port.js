@@ -13,13 +13,13 @@ export class Port extends React.Component {
             e => {
                 this._dragMouseX = e.pageX;
                 this._dragMouseY = e.pageY;
-                this.setState({dragging: true});
+                this.setState({dragging: true, mouseX: 0, mouseY: 0});
             },
             //TODO check if close to any port, highlight port
             e => {
                 this.setState({
-                    mouseX: Math.round((this.state.mouseX + e.pageX - this._dragMouseX) / this.props.appState.scale),
-                    mouseY: Math.round((this.state.mouseY + e.pageY - this._dragMouseY) / this.props.appState.scale)
+                    mouseX: this.state.mouseX + Math.round((e.pageX - this._dragMouseX) * this.props.appState.scale),
+                    mouseY: this.state.mouseY + Math.round((e.pageY - this._dragMouseY) * this.props.appState.scale)
                 });
                 this._dragMouseX = e.pageX;
                 this._dragMouseY = e.pageY;

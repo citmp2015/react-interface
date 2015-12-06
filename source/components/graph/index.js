@@ -22,8 +22,8 @@ export class Graph extends React.Component {
             },
             e => {
                 this.setState({
-                    offsetX: Math.round((this.state.offsetX + e.pageX - this._dragMouseX) / this.state.scale),
-                    offsetY: Math.round((this.state.offsetY + e.pageY - this._dragMouseY) / this.state.scale)
+                    offsetX: this.state.offsetX + Math.round((e.pageX - this._dragMouseX) * this.state.scale),
+                    offsetY: this.state.offsetY + Math.round((e.pageY - this._dragMouseY) * this.state.scale)
                 });
 
                 //save coordinates

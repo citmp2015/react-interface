@@ -24,8 +24,8 @@ export class Node extends React.Component {
                 //update element position
                 //TODO update global state
                 this.setState({
-                    x: Math.round((this.state.x + e.pageX - this._dragMouseX) / this.props.appState.scale),
-                    y: Math.round((this.state.y + e.pageY - this._dragMouseY) / this.props.appState.scale)
+                    x: this.state.x + Math.round((e.pageX - this._dragMouseX) * this.props.appState.scale),
+                    y: this.state.y + Math.round((e.pageY - this._dragMouseY) * this.props.appState.scale)
                 });
 
                 //save coordinates
