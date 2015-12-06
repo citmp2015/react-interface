@@ -32,7 +32,7 @@ export class Port extends React.Component {
 
         let yPos = this.props.y + this.props.offsetY;
 
-        return <g onMouseDown={this.onMouseDown.bind(this)}>
+        return <g onMouseDown={this.onMouseDown}>
             <circle r="7" cx={this.props.x + this.props.offsetX} cy={yPos}/>
             {connections.map(c => {
                     let {process, port} = c.tgt;

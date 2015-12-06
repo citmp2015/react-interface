@@ -56,8 +56,8 @@ export class Graph extends React.Component {
         var {processes} = this.props;
         return <svg
             height={this.state.height} width={this.state.width}
-            onMouseDown={this.onMouseDown.bind(this)}
             //onWheel={this.onWheel.bind(this)}
+            onMouseDown={this.onMouseDown}
         >
             <g>{
                 Object.keys(processes).map(n => {

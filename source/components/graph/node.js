@@ -55,7 +55,7 @@ export class Node extends React.Component {
         let {inPorts, outPorts} = this.props.component;
         let {width, height} = this.state;
 
-        return <g onMouseDown={this.onMouseDown.bind(this)}>
+        return <g onMouseDown={this.onMouseDown}>
             <rect
                 fill="hsla(0, 0%, 0%, 0.75)"
                 stroke="hsl(0, 0%, 50%)" strokeWidth="2px"
