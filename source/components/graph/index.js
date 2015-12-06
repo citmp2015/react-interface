@@ -80,7 +80,7 @@ export class Graph extends React.Component {
                     let process = processes[n];
 
                     return <Node
-                        key={n} process={n}
+                        key={n} process={n} name={n}
                         //scale={this.state.scale}
                         component={this.props.components[process.component]}
                         appState={this.state}
@@ -88,6 +88,9 @@ export class Graph extends React.Component {
                         processes={processes}
                         components={this.props.components}
                         connections={this.props.connections}
+
+                        //store
+                        dispatch={this.props.dispatch}
                     />;
                 })
             }</g>

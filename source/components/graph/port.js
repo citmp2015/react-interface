@@ -16,11 +16,9 @@ export class Port extends React.Component {
                 this.setState({dragging: true, mouseX: 0, mouseY: 0});
             },
             //TODO check if close to any port, highlight port
+            // this.props.dispatch({type: 'ADD_CONNECTION', srcProcess, srcPort, tgtProcess, tgtPort});
             e => {
-                this.setState({
-                    mouseX: this.state.mouseX + Math.round((e.pageX - this._dragMouseX) * this.props.appState.scale),
-                    mouseY: this.state.mouseY + Math.round((e.pageY - this._dragMouseY) * this.props.appState.scale)
-                });
+                this.updateMousePos(e.pageX - this._dragMouseX, e.pageY - this._dragMouseY);
                 this._dragMouseX = e.pageX;
                 this._dragMouseY = e.pageY;
             },
@@ -32,6 +30,21 @@ export class Port extends React.Component {
             mouseX: 0,
             mouseY: 0
         };
+    }
+
+    updateMousePos(absoluteX, absoluteY){
+        let mouseX = this.state.mouseX + Math.round(absoluteX * this.props.appState.scale);
+        let mouseY = this.state.mouseY + Math.round(absoluteY * this.props.appState.scale);
+
+        this.setState({mouseX, mouseY});
+        if(requestAnimationFrame){
+            requestAnimationFrame(() => this.searchConnection(mouseX, mouseY));
+        } //TODO else
+    }
+
+    searchConnection(mouseX, mouseY){
+        //TODO
+        console.log('searching', mouseX, mouseY);
     }
 
     render(){

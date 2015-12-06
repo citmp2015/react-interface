@@ -22,23 +22,21 @@ export class Node extends React.Component {
             },
             e => {
                 //update element position
-                //TODO update global state
-                this.setState({
-                    x: this.state.x + Math.round((e.pageX - this._dragMouseX) * this.props.appState.scale),
-                    y: this.state.y + Math.round((e.pageY - this._dragMouseY) * this.props.appState.scale)
-                });
+
+                let x = this.props.metadata.x + Math.round((e.pageX - this._dragMouseX) * this.props.appState.scale);
+                let y = this.props.metadata.y + Math.round((e.pageY - this._dragMouseY) * this.props.appState.scale);
 
                 //save coordinates
                 this._dragMouseX = e.pageX;
                 this._dragMouseY = e.pageY;
+
+                this.props.dispatch({type: 'MOVE_ELEMENT', name: this.props.name, x, y});
             }
         );
 
         this.state = {
             width: 20,
-            height: minHeight + 20,
-            x: props.metadata.x,
-            y: props.metadata.y
+            height: minHeight + 20
         };
     }
 
@@ -54,6 +52,7 @@ export class Node extends React.Component {
     render(){
         let {inPorts, outPorts} = this.props.component;
         let {width, height} = this.state;
+        let {x, y} = this.props.metadata;
 
         return <g onMouseDown={this.onMouseDown}>
             <rect
@@ -61,9 +60,9 @@ export class Node extends React.Component {
                 stroke="hsl(0, 0%, 50%)" strokeWidth="2px"
                 rx="4" ry="4"
                 width={width} height={height}
-                x={this.state.x} y={this.state.y}
+                x={x} y={y}
             />
-            <foreignObject x={this.state.x + 10} y={this.state.y + 10} width={width - 20} height={height - 20}>
+            <foreignObject x={x + 10} y={y + 10} width={width - 20} height={height - 20}>
                 <body xmlns="http://www.w3.org/1999/xhtml">
                     <div ref="foreignContainer">
                         <h3 style={{color: '#fff'}}>{this.props.metadata.label}</h3>
@@ -80,12 +79,13 @@ export class Node extends React.Component {
                         key={n}
                         type="in"
                         process={this.props.process}
-                        x={this.state.x}
-                        y={this.state.y + getPortYPos(i, this.state.height)}
+                        x={x}
+                        y={y + getPortYPos(i, this.state.height)}
                         processes={this.props.processes}
                         components={this.props.components}
                         connections={[]}
                         appState={this.props.appState}
+                        store={this.props.store}
                     />
                 )}
             </g>
@@ -99,12 +99,15 @@ export class Node extends React.Component {
                         type="out"
                         key={n}
                         process={this.props.process}
-                        x={this.state.x + width}
-                        y={this.state.y + getPortYPos(i, this.state.height)}
+                        x={x + width}
+                        y={y + getPortYPos(i, this.state.height)}
                         processes={this.props.processes}
                         components={this.props.components}
                         connections={connections}
                         appState={this.props.appState}
+
+                        //store
+                        dispatch={this.props.dispatch}
                     />;
                 })}
             </g>
