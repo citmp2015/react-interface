@@ -37,7 +37,7 @@ export class Graph extends React.Component {
     onWheel(e){
         e.preventDefault();
 
-        let zoomFactor = e.deltaY / -500;
+        let zoomFactor = e.deltaY / 300;
         zoomFactor = Math.min(0.5, Math.max(-0.5, zoomFactor)); //limit speed
         let scale = this.state.scale + (this.state.scale * zoomFactor);
 
