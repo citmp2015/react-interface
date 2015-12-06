@@ -1,6 +1,7 @@
 import React from 'react';
 import {Port} from './port';
 import dragHandler from 'lib/dragHandler';
+import getPortYPos from 'lib/getPortYPos';
 
 export class Node extends React.Component {
     constructor(props) {
@@ -8,7 +9,7 @@ export class Node extends React.Component {
 
         let {inPorts, outPorts} = this.props.component;
         let maxPorts = Math.max(inPorts.length, outPorts.length);
-        let minHeight = 10 + maxPorts * 20; //FIXME static sizing
+        let minHeight = getPortYPos(maxPorts); //FIXME static sizing
 
         this.minHeight = minHeight;
 
@@ -98,7 +99,7 @@ export class Node extends React.Component {
                     return <Port
                         type="out"
                         key={n}
-                        process={this.props.process}
+                        process={this.props.process} name={n}
                         x={x + width}
                         y={y + getPortYPos(i, this.state.height)}
                         processes={this.props.processes}
@@ -113,9 +114,4 @@ export class Node extends React.Component {
             </g>
         </g>;
     }
-}
-
-//TODO add to separate module
-function getPortYPos(idx, height){
-    return 10 + idx * 20;
 }
