@@ -24,8 +24,8 @@ export class Node extends React.Component {
             e => {
                 //update element position
 
-                let x = this.props.metadata.x + Math.round((e.pageX - this._dragMouseX) * this.props.appState.scale);
-                let y = this.props.metadata.y + Math.round((e.pageY - this._dragMouseY) * this.props.appState.scale);
+                let x = this.props.metadata.x + Math.round((e.pageX - this._dragMouseX) * this.props.scale);
+                let y = this.props.metadata.y + Math.round((e.pageY - this._dragMouseY) * this.props.scale);
 
                 //save coordinates
                 this._dragMouseX = e.pageX;
@@ -85,7 +85,7 @@ export class Node extends React.Component {
                         processes={this.props.processes}
                         components={this.props.components}
                         connections={[]}
-                        appState={this.props.appState}
+                        scale={this.props.scale}
 
                         //store
                         dispatch={this.props.dispatch}
@@ -107,7 +107,7 @@ export class Node extends React.Component {
                         processes={this.props.processes}
                         components={this.props.components}
                         connections={connections}
-                        appState={this.props.appState}
+                        scale={this.props.scale}
 
                         //store
                         dispatch={this.props.dispatch}

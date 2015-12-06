@@ -83,7 +83,7 @@ export class Graph extends React.Component {
                         key={n} process={n} name={n}
                         //scale={this.state.scale}
                         component={this.props.components[process.component]}
-                        appState={this.state}
+                        scale={this.state.scale}
                         metadata={process.metadata}
                         processes={processes}
                         components={this.props.components}

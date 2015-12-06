@@ -49,8 +49,8 @@ export class Port extends React.Component {
     }
 
     updateMousePos(absoluteX, absoluteY){
-        let mouseX = this.state.mouseX + Math.round(absoluteX * this.props.appState.scale);
-        let mouseY = this.state.mouseY + Math.round(absoluteY * this.props.appState.scale);
+        let mouseX = this.state.mouseX + Math.round(absoluteX * this.props.scale);
+        let mouseY = this.state.mouseY + Math.round(absoluteY * this.props.scale);
 
         this.setState({mouseX, mouseY});
         //TODO support incoming ports
