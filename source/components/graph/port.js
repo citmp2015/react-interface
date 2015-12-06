@@ -65,9 +65,12 @@ export class Port extends React.Component {
     }
 
     getClosestPort(mouseX, mouseY){
+        let xPos = this.props.x + mouseX;
+        let yPos = this.props.y + mouseY;
+
         let processes = this.props.processes;
         //first, filter procs by their x value
-        let closeProcs = Object.keys(processes).filter(p => Math.abs(processes[p].metadata.x - mouseX - this.props.x) < 50);
+        let closeProcs = Object.keys(processes).filter(p => Math.abs(processes[p].metadata.x - xPos) < 50);
 
         if(closeProcs.length === 0) return null;
 
@@ -77,12 +80,12 @@ export class Port extends React.Component {
         let minProc = 0;
         let minPort = 0;
 
-        inPorts.forEach((n, procIdx) => n.forEach((yPos, portIdx) => {
+        inPorts.forEach((n, procIdx) => n.forEach((n, portIdx) => {
             //no sqrt (is monotonic anyway)
             let distance = Math.pow(
-                processes[closeProcs[procIdx]].metadata.x - this.props.x - mouseX, 2
+                processes[closeProcs[procIdx]].metadata.x - xPos, 2
             ) + Math.pow(
-                getPortYPos(portIdx) + processes[closeProcs[procIdx]].metadata.y - this.props.y - mouseY, 2
+                getPortYPos(portIdx) + processes[closeProcs[procIdx]].metadata.y - yPos, 2
             );
 
             if(distance < minDistance){
