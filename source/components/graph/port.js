@@ -51,22 +51,17 @@ export class Port extends React.Component {
     }
 
     render(){
-        let connections = [];
-        if(this.props.type === 'out'){
-             connections = this.props.connections.filter(
-                 con => con.src && con.src.process === this.props.process && con.src.port === this.props.name
-             );
-        }
+        let connections = this.props.connections;
 
-        let yPos = this.props.y + 10 + this.props.index * 20;
+        let yPos = this.props.y + this.props.offsetY;
 
         return <g onMouseDown={this.onMouseDown.bind(this)}>
-            <circle r="7" cx={this.props.x} cy={yPos}></circle>
+            <circle r="7" cx={this.props.x + this.props.offsetX} cy={yPos}/>
             {connections.map(c => {
                     let {process, port} = c.tgt;
                     process = this.props.processes[process];
-                    let component = this.props.components[process.component];
-                    let portIdx = component.inPorts.indexOf(port);
+                    let {inPorts} = this.props.components[process.component];
+                    let portIdx = inPorts.indexOf(port);
 
                     if(portIdx < 0) throw new Error(`Port $(c.tgt.port) does not exist`);
 
@@ -74,8 +69,10 @@ export class Port extends React.Component {
 
                     return <Edge
                         key={`${c.tgt.process}_${c.tgt.port}`}
-                        startX={this.props.x} startY={yPos}
-                        endX={process.metadata.x} endY={endY}
+                        startX={this.props.x + this.props.offsetX}
+                        startY={yPos}
+                        endX={process.metadata.x + this.props.offsetX}
+                        endY={endY + this.props.offsetY}
                     />;
             })}
             {this.state.dragging ?
@@ -87,7 +84,5 @@ export class Port extends React.Component {
 }
 
 Port.propTypes = {
-    name: React.PropTypes.string.isRequired,
-    index: React.PropTypes.number.isRequired,
     type: React.PropTypes.oneOf(['in', 'out']).isRequired
 };

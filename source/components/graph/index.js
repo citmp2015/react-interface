@@ -74,15 +74,21 @@ export class Graph extends React.Component {
             onMouseDown={this.onMouseDown.bind(this)}
             //onWheel={this.onWheel.bind(this)}
         >
-            <g transform={`translate(${this.state.offsetX} ${this.state.offsetY})`}>{
-                Object.keys(processes).map(
-                    n=><Node
-                        key={n} process={n} node={processes[n]}
-                        scale={this.state.scale}
-                        component={this.props.components[processes[n].component]}
-                        {...this.props}
-                    />
-                )
+            <g>{
+                Object.keys(processes).map(n => {
+                    let process = processes[n];
+
+                    return <Node
+                        key={n} process={n}
+                        //scale={this.state.scale}
+                        component={this.props.components[process.component]}
+                        offsetX={this.state.offsetX} offsetY={this.state.offsetY}
+                        metadata={process.metadata}
+                        processes={processes}
+                        components={this.props.components}
+                        connections={this.props.connections}
+                    />;
+                })
             }</g>
         </svg>;
     }
