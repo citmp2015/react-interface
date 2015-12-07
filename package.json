@@ -2,6 +2,7 @@
   "name": "react-graph-editor",
   "version": "0.0.0",
   "description": "",
+  "private": true,
   "scripts": {
     "clean": "rimraf build",
     "build:webpack": "webpack --config webpack.config.prod.js",
