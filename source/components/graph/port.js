@@ -3,6 +3,8 @@ import Edge from './edge';
 import dragHandler from 'lib/dragHandler';
 import getPortYPos from 'lib/getPortYPos';
 
+const MAX_PORT_DISTANCE = 50;
+
 export class Port extends React.Component {
     constructor(props) {
         super(props);
@@ -25,7 +27,7 @@ export class Port extends React.Component {
                 this.setState({dragging: false});
 
                 //TODO support incoming ports
-                if(this.props.type === "in") return;
+                if(this.props.type === 'in') return;
 
                 let target = this.getClosestPort(this.state.mouseX, this.state.mouseY);
 
@@ -54,7 +56,7 @@ export class Port extends React.Component {
 
         this.setState({mouseX, mouseY});
         //TODO support incoming ports
-        if(this.props.type === "out"){
+        if(this.props.type === 'out'){
             window.requestAnimationFrame(() => this.searchConnection(mouseX, mouseY));
         }
     }
@@ -69,18 +71,18 @@ export class Port extends React.Component {
         let yPos = this.props.y + mouseY;
 
         let processes = this.props.processes;
-        //first, filter procs by their x value
-        let closeProcs = Object.keys(processes).filter(p => Math.abs(processes[p].metadata.x - xPos) < 50);
+        //first, filter procs by their x value (simple speedup)
+        let closeProcs = Object.keys(processes).filter(p => Math.abs(processes[p].metadata.x - xPos) < MAX_PORT_DISTANCE);
 
         if(closeProcs.length === 0) return null;
 
         let inPorts = closeProcs.map(p => this.props.components[processes[p].component].inPorts);
 
-        let minDistance = 1e3;
-        let minProc = 0;
-        let minPort = 0;
+        let minDistance = MAX_PORT_DISTANCE;
+        let minProc = -1;
+        let minPort = -1;
 
-        inPorts.forEach((n, procIdx) => n.forEach((n, portIdx) => {
+        inPorts.forEach((n, procIdx) => n.forEach((portName, portIdx) => {
             //no sqrt (is monotonic anyway)
             let distance = Math.pow(
                 processes[closeProcs[procIdx]].metadata.x - xPos, 2
@@ -94,6 +96,8 @@ export class Port extends React.Component {
                 minPort = portIdx;
             }
         }));
+
+        if(minProc === -1) return null;
 
         return {process: closeProcs[minProc], port: inPorts[minProc][minPort]};
     }
