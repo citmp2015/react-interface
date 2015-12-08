@@ -59,21 +59,19 @@ let store = createStore((state = {...require('./photobooth.json.js'), selections
                 return o;
             }, {});
 
-            /*
-            //React currently won't permit this
             let {processes} = state;
             if('NODE' in selectionsByType){
                 let keys = Object.keys(processes).filter(p => selectionsByType.NODE.every(n => n.process !== p));
+                //TODO remove edges
 
                 processes = keys.reduce((o, proc) => {
                     o[proc] = processes[proc];
                     return o;
                 }, {});
             }
-            */
 
             return {
-                ...state,
+                ...state, processes,
                 selections: 'HIGHLIGHT_PORT' in selectionsByType ? selectionsByType.HIGHLIGHT_PORT : [],
                 connections: 'EDGE' in selectionsByType ?
                     state.connections.filter(c => selectionsByType.EDGE.every(e => e.connection !== c)) :
