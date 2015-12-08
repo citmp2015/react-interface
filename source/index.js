@@ -130,7 +130,8 @@ render(
                     store.dispatch({type: 'ADD_ELEMENT', name: c});
                 }}/>
             )
-        } | <input type="button" value="Get JAR" onClick={() => window.alert('Not implemented')}/></div>
+        } | <input type="button" value="Get JAR" onClick={() => window.alert('Not implemented')}/>
+        <input type="button" value="Deploy & run" onClick={() => window.alert('Not implemented')}/></div>
     </div>,
     document.getElementById('root')
 );
