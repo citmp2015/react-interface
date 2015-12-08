@@ -4,7 +4,7 @@ import {createStore} from 'redux';
 import {Provider, connect} from 'react-redux';
 import {Graph} from 'components/graph';
 
-import graphData from 'photobooth.json.js';
+import graphData from 'word-count.json.js';
 graphData.connections = graphData.connections.filter(c => 'src' in c);
 
 let store = createStore((state = {...graphData, selections: [], inputs: {}}, action) => {
