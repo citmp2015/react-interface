@@ -17,6 +17,21 @@ let store = createStore((state = {...graphData, selections: [], inputs: {}}, act
                     tgt: {process: action.tgtProcess, port: action.tgtPort}
                 }]
             };
+        case 'ADD_ELEMENT':
+            return {
+                ...state,
+                processes: {
+                    ...state.processes,
+                    [action.name + (Date.now() % 1e9).toString(36)]: {
+                        component: action.name,
+                        metadata: {
+                            label: action.name,
+                            x: 50,
+                            y: 100
+                        }
+                    }
+                }
+            };
         case 'MOVE_ELEMENT':
             return {
                 ...state,
@@ -104,9 +119,19 @@ let store = createStore((state = {...graphData, selections: [], inputs: {}}, act
 let ConnectedGraph = connect(s=>({...s}))(Graph);
 
 render(
-    <Provider store={store}>
-        <ConnectedGraph getState={store.getState.bind(store)}/>
-    </Provider>,
+    <div>
+        <Provider store={store}>
+            <ConnectedGraph getState={store.getState.bind(store)}/>
+        </Provider>
+        <div style={{position: 'absolute', top: '1.5em', left: '1.5em', padding: '.7em', backgroundColor: 'hsla(0, 50%, 50%, .5)'}}>{
+            Object.keys(store.getState().components).map(c =>
+                <input type="button" value={c} key={c} onClick={e => {
+                    e.preventDefault();
+                    store.dispatch({type: 'ADD_ELEMENT', name: c});
+                }}/>
+            )
+        } | <input type="button" value="Get JAR" onClick={() => window.alert('Not implemented')}/></div>
+    </div>,
     document.getElementById('root')
 );
 
