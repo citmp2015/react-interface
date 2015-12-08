@@ -4,10 +4,10 @@ import {createStore} from 'redux';
 import {Provider, connect} from 'react-redux';
 import {Graph} from 'components/graph';
 
-import photobooth from 'photobooth.json.js';
-photobooth.connections = photobooth.connections.filter(c => 'src' in c);
+import graphData from 'photobooth.json.js';
+graphData.connections = graphData.connections.filter(c => 'src' in c);
 
-let store = createStore((state = {...photobooth, selections: []}, action) => {
+let store = createStore((state = {...graphData, selections: [], inputs: {}}, action) => {
     switch(action.type){
         case 'ADD_CONNECTION':
             return {
@@ -84,6 +84,17 @@ let store = createStore((state = {...photobooth, selections: []}, action) => {
             return {
                 ...state, processes, connections,
                 selections: 'HIGHLIGHT_PORT' in selectionsByType ? selectionsByType.HIGHLIGHT_PORT : [],
+            };
+        case 'INPUT_CHANGE':
+            return {
+                ...state,
+                inputs: {
+                    ...state.inputs,
+                    [action.process]: {
+                        ...(action.process in state.inputs ? state.inputs[action.process] : {}),
+                        [action.name]: action.value
+                    }
+                }
             };
         default:
             return state;

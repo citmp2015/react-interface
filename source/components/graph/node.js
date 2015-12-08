@@ -1,5 +1,6 @@
 import React from 'react';
 import {Port} from './port';
+import {NodeForm} from './node-form';
 import dragHandler from 'lib/dragHandler';
 import getPortYPos from 'lib/getPortYPos';
 
@@ -43,12 +44,16 @@ export class Node extends React.Component {
     }
 
     //set size according to iframe size
-    componentDidMount(){
+    updateDimensions(){
         //get dimensions of container
         this.setState({
             width: this.refs.foreignContainer.scrollWidth + 20,
             height: Math.max(this.refs.foreignContainer.scrollHeight + 20, this.minHeight)
         });
+    }
+
+    componentDidMount(){
+        this.updateDimensions();
     }
 
     render(){
@@ -66,7 +71,7 @@ export class Node extends React.Component {
                 port: null,
                 add: e.shiftKey
             });
-        }
+        };
 
         return <g onMouseDown={this.onMouseDown} onClick={onClick}>
             <rect
@@ -79,10 +84,12 @@ export class Node extends React.Component {
             <foreignObject x={x + 10} y={y + 10} width={width - 20} height={height - 20} xmlns="http://www.w3.org/1999/xhtml">
                 <div ref="foreignContainer">
                     <h3 style={{color: '#fff'}}>{this.props.metadata.label}</h3>
-                    <form onMouseDown={e=>e.stopPropagation()}>
-                        <label>Text: <input type="text" placeholder="Test"/></label>
-                        <label>Number: <input type="number" placeholder="42"/></label>
-                    </form>
+                    {this.props.component.formData ? <NodeForm
+                        process={this.props.process}
+                        updateDimensions={this.updateDimensions.bind(this)}
+                        dispatch={this.props.dispatch}
+                        data={this.props.component.formData}
+                    /> : []}
                 </div>
             </foreignObject>
             <g>
