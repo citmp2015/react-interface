@@ -112,7 +112,7 @@ render(
 
 //TODO move this to a better place
 window.addEventListener('keydown', (e) => {
-    if(e.keyCode === 8 && store.getState().selections.length > 0){
+    if(e.keyCode === 8 && e.shiftKey && store.getState().selections.length > 0){
         e.preventDefault();
 
         store.dispatch({type: 'REMOVE_SELECTED'});
