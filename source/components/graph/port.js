@@ -3,7 +3,7 @@ import Edge from './edge';
 import dragHandler from 'lib/dragHandler';
 import getPortYPos from 'lib/getPortYPos';
 
-const MAX_PORT_DISTANCE = 50;
+const MAX_PORT_DISTANCE = 30;
 
 export class Port extends React.Component {
     constructor(props) {
@@ -104,11 +104,12 @@ export class Port extends React.Component {
         let minPort = -1;
 
         inPorts.forEach((n, procIdx) => n.forEach((portName, portIdx) => {
-            //no sqrt (is monotonic anyway)
-            let distance = Math.pow(
-                processes[closeProcs[procIdx]].metadata.x - xPos, 2
-            ) + Math.pow(
-                getPortYPos(portIdx) + processes[closeProcs[procIdx]].metadata.y - yPos, 2
+            let distance = Math.sqrt(
+                Math.pow(
+                    processes[closeProcs[procIdx]].metadata.x - xPos, 2
+                ) + Math.pow(
+                    getPortYPos(portIdx) + processes[closeProcs[procIdx]].metadata.y - yPos, 2
+                )
             );
 
             if(distance < minDistance){
