@@ -4,7 +4,10 @@ import {createStore} from 'redux';
 import {Provider, connect} from 'react-redux';
 import {Graph} from 'components/graph';
 
-let store = createStore((state = {...require('./photobooth.json.js'), selections: []}, action) => {
+import photobooth from 'photobooth.json.js';
+photobooth.connections = photobooth.connections.filter(c => 'src' in c);
+
+let store = createStore((state = {...photobooth, selections: []}, action) => {
     switch(action.type){
         case 'ADD_CONNECTION':
             return {
@@ -59,23 +62,28 @@ let store = createStore((state = {...require('./photobooth.json.js'), selections
                 return o;
             }, {});
 
-            let {processes} = state;
+            let {processes, connections} = state;
             if('NODE' in selectionsByType){
                 let keys = Object.keys(processes).filter(p => selectionsByType.NODE.every(n => n.process !== p));
-                //TODO remove edges
 
                 processes = keys.reduce((o, proc) => {
                     o[proc] = processes[proc];
                     return o;
                 }, {});
+
+                //remove edges
+                connections = connections.filter(
+                    c => selectionsByType.NODE.every(n => n.process !== c.src.process && n.process !== c.tgt.process)
+                );
+            }
+
+            if('EDGE' in selectionsByType){
+                connections = connections.filter(c => selectionsByType.EDGE.every(e => e.connection !== c));
             }
 
             return {
-                ...state, processes,
+                ...state, processes, connections,
                 selections: 'HIGHLIGHT_PORT' in selectionsByType ? selectionsByType.HIGHLIGHT_PORT : [],
-                connections: 'EDGE' in selectionsByType ?
-                    state.connections.filter(c => selectionsByType.EDGE.every(e => e.connection !== c)) :
-                    state.connections
             };
         default:
             return state;
