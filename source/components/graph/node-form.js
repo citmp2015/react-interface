@@ -25,11 +25,11 @@ export class NodeForm extends React.Component {
 
                         if(inputs.length - 1 === i){
                             newState.push('');
+                            setTimeout(this.props.updateDimensions, 30);
                         }
 
                         this.setState({inputs: newState});
                         this.props.dispatch({type: 'INPUT_CHANGE', process: this.props.process, name: 'types', value: newState});
-                        this.props.updateDimensions();
                     }
                 }/></label>
             )}
