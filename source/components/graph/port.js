@@ -128,9 +128,6 @@ export class Port extends React.Component {
         let state = this.props.getState();
 
         return <g onMouseDown={this.onMouseDown}>
-            <circle r="7" cx={this.props.x} cy={this.props.y}
-                stroke={this.props.selected ? '#feed1c' : '#000'} strokeWidth="2px"
-            />
             {connections.map(c => {
                     let {process, port} = c.tgt;
                     process = this.props.processes[process];
@@ -152,6 +149,9 @@ export class Port extends React.Component {
                         dispatch={this.props.dispatch}
                     />;
             })}
+            <circle r="7" cx={this.props.x} cy={this.props.y}
+                stroke={this.props.selected ? '#feed1c' : '#000'} strokeWidth="2px"
+            />
             {this.state.dragging ?
                 [
                     <Edge
