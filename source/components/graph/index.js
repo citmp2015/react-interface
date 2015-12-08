@@ -72,12 +72,15 @@ export class Graph extends React.Component {
         return <svg
             height={this.state.height} width={this.state.width}
             onMouseDown={this.onMouseDown}
+            onClick={e => e.shiftKey || this.props.dispatch({type: 'DESELECT', kind: 'ALL'})}
             onWheel={this.onWheel.bind(this)}
             viewBox={`${-this.state.offsetX} ${-this.state.offsetY} ${this.state.scale * this.state.width} ${this.state.scale * this.state.height}`}
         >
             <g>{
                 Object.keys(processes).map(n => {
                     let process = processes[n];
+
+                    let selections = this.props.selections.filter(s => s.process === n);
 
                     return <Node
                         key={n} process={n} name={n}
@@ -86,10 +89,12 @@ export class Graph extends React.Component {
                         scale={this.state.scale}
                         metadata={process.metadata}
                         processes={processes}
-                        components={this.props.components}
                         connections={this.props.connections}
+                        selected={selections.some(s => s.kind === 'NODE')}
+                        selections={selections}
 
                         //store
+                        getState={this.props.getState}
                         dispatch={this.props.dispatch}
                     />;
                 })

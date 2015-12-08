@@ -40,6 +40,11 @@ export class Port extends React.Component {
                     tgtProcess: target.process,
                     tgtPort: target.port
                 });
+
+                this.props.dispatch({
+                    type: 'DESELECT',
+                    kind: 'HIGHLIGHT_PORT'
+                });
             }
         );
 
@@ -63,7 +68,23 @@ export class Port extends React.Component {
 
     searchConnection(mouseX, mouseY){
         let port = this.getClosestPort(mouseX, mouseY);
-        //TODO highlight port
+
+        if(port === null){
+            this.props.dispatch({
+                type: 'DESELECT',
+                kind: 'HIGHLIGHT_PORT'
+            });
+            return;
+        }
+
+        this.props.dispatch({
+            type: 'SELECTION',
+            kind: 'HIGHLIGHT_PORT',
+            process: port.process,
+            port: port.port,
+            //TODO direction: 'in',
+            add: true
+        });
     }
 
     getClosestPort(mouseX, mouseY){
@@ -76,7 +97,7 @@ export class Port extends React.Component {
 
         if(closeProcs.length === 0) return null;
 
-        let inPorts = closeProcs.map(p => this.props.components[processes[p].component].inPorts);
+        let inPorts = closeProcs.map(p => this.props.getState().components[processes[p].component].inPorts);
 
         let minDistance = MAX_PORT_DISTANCE;
         let minProc = -1;
@@ -104,13 +125,16 @@ export class Port extends React.Component {
 
     render(){
         let connections = this.props.connections;
+        let state = this.props.getState();
 
         return <g onMouseDown={this.onMouseDown}>
-            <circle r="7" cx={this.props.x} cy={this.props.y}/>
+            <circle r="7" cx={this.props.x} cy={this.props.y}
+                stroke={this.props.selected ? '#feed1c' : '#000'} strokeWidth="2px"
+            />
             {connections.map(c => {
                     let {process, port} = c.tgt;
                     process = this.props.processes[process];
-                    let {inPorts} = this.props.components[process.component];
+                    let {inPorts} = state.components[process.component];
                     let portIdx = inPorts.indexOf(port);
 
                     if(portIdx < 0) throw new Error(`Port $(c.tgt.port) does not exist`);
@@ -123,6 +147,9 @@ export class Port extends React.Component {
                         startY={this.props.y}
                         endX={process.metadata.x}
                         endY={endY}
+                        selected={this.props.selections.some(s => s.connection === c)}
+                        connection={c}
+                        dispatch={this.props.dispatch}
                     />;
             })}
             {this.state.dragging ?

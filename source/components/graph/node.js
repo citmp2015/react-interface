@@ -37,7 +37,8 @@ export class Node extends React.Component {
 
         this.state = {
             width: 20,
-            height: minHeight + 20
+            height: minHeight + 20,
+            selected: false
         };
     }
 
@@ -55,10 +56,22 @@ export class Node extends React.Component {
         let {width, height} = this.state;
         let {x, y} = this.props.metadata;
 
-        return <g onMouseDown={this.onMouseDown}>
+        let onClick = e => {
+            e.stopPropagation();
+            e.preventDefault();
+            this.props.dispatch({
+                type: 'SELECTION',
+                kind: 'NODE',
+                process: this.props.process,
+                port: null,
+                add: e.shiftKey
+            });
+        }
+
+        return <g onMouseDown={this.onMouseDown} onClick={onClick}>
             <rect
                 fill="hsla(0, 0%, 0%, 0.75)"
-                stroke="hsl(0, 0%, 50%)" strokeWidth="2px"
+                stroke={`hsl(100, ${this.props.selected ? 80 : 0}%, 50%)`} strokeWidth="2px"
                 rx="4" ry="4"
                 width={width} height={height}
                 x={x} y={y}
@@ -75,19 +88,20 @@ export class Node extends React.Component {
                 </body>
             </foreignObject>
             <g>
-                {inPorts.map((n, i) =>
-                    <Port
+                {inPorts.map((n, i) => <Port
                         key={n}
                         type="in"
                         process={this.props.process}
                         x={x}
                         y={y + getPortYPos(i, this.state.height)}
                         processes={this.props.processes}
-                        components={this.props.components}
                         connections={[]}
                         scale={this.props.scale}
+                        selected={this.props.selections.some(s => s.kind === 'HIGHLIGHT_PORT' && s.port === n)}
+                        selections={[]}
 
                         //store
+                        getState={this.props.getState}
                         dispatch={this.props.dispatch}
                     />
                 )}
@@ -105,11 +119,13 @@ export class Node extends React.Component {
                         x={x + width}
                         y={y + getPortYPos(i, this.state.height)}
                         processes={this.props.processes}
-                        components={this.props.components}
                         connections={connections}
                         scale={this.props.scale}
+                        selected={false}
+                        selections={this.props.selections.filter(s => s.kind === 'EDGE' && s.port === n)}
 
                         //store
+                        getState={this.props.getState}
                         dispatch={this.props.dispatch}
                     />;
                 })}
