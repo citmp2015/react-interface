@@ -13,6 +13,7 @@ module.exports = {
     connections: [],
     components: {
         readCSV: {
+            label: 'Read CSV file',
             inPorts: [],
             outPorts: ['out'],
             formData: {
@@ -22,9 +23,14 @@ module.exports = {
                     label: 'Input file path '
                 },
                 inputs: {
-                    type: ['text']
+                    type: 'enum',
+                    values: ['text']
                 }
             }
+        },
+        readFile: {
+            inPorts: [],
+            outPorts: ['out']
         },
         splitLines: {
             inPorts: ['in'],
